@@ -1,0 +1,6 @@
+{
+  "name": "উত্তর গাজীপুর সূর্যতরুণ ক্লাব",
+  "description": "উত্তর গাজীপুর সূর্যতরুণ ক্লাব একটি অরাজনৈতিক সামাজিক ও যুব সংগঠন। শিক্ষা, ঐক্য ও মানবতার কল্যাণে নিবেদিত। চাঁদপুর, বাংলাদেশ। হটলাইন: 01841-590350",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
