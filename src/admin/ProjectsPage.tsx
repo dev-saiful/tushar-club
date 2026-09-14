@@ -1,14 +1,15 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
 import { supabase } from '../lib/supabase'
 import type { ProjectRow } from '../lib/db'
 import { PageHeader, Modal, Field, inputClass, PrimaryButton } from './ui'
+import DataTable from './DataTable'
 
 const emptyForm = { title: '', category: 'মানবতা', category_en: 'Humanity', description: '', impact: '', status: 'চলমান', image_url: '', highlights: '' }
 
 export default function ProjectsPage() {
   const [rows, setRows] = useState<ProjectRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState('সকল')
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState<ProjectRow | null>(null)
   const [form, setForm] = useState(emptyForm)
@@ -51,52 +52,30 @@ export default function ProjectsPage() {
     fetchRows()
   }
 
-  const visible = filter === 'সকল' ? rows : rows.filter((r) => r.category === filter)
+  const columns = useMemo<ColumnDef<ProjectRow, unknown>[]>(() => [
+    { accessorKey: 'title', header: 'শিরোনাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
+    { accessorKey: 'category', header: 'ক্যাটাগরি' },
+    { accessorKey: 'status', header: 'স্ট্যাটাস' },
+    {
+      id: 'actions',
+      header: 'অ্যাকশন',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-end md:justify-start">
+          <button onClick={() => openEdit(row.original)} className="px-3 py-1 bg-yellow-600 rounded text-white text-xs">এডিট</button>
+          <button onClick={() => handleDelete(row.original.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
+        </div>
+      ),
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [])
 
   if (loading) return <div className="text-white">Loading...</div>
 
   return (
     <div>
-      <PageHeader
-        title="প্রকল্প"
-        action={
-          <div className="flex gap-2">
-            <select value={filter} onChange={(e) => setFilter(e.target.value)} className="px-3 py-2 rounded bg-gray-700 text-white text-sm">
-              <option value="সকল">সকল</option>
-              <option value="শিক্ষা">শিক্ষা</option>
-              <option value="ঐক্য">ঐক্য</option>
-              <option value="মানবতা">মানবতা</option>
-              <option value="পরিবেশ">পরিবেশ</option>
-            </select>
-            <PrimaryButton onClick={openAdd}>+ নতুন যোগ করুন</PrimaryButton>
-          </div>
-        }
-      />
-      <div className="bg-gray-800 rounded-lg overflow-auto">
-        <table className="w-full text-sm text-gray-200">
-          <thead>
-            <tr className="border-b border-gray-700 text-left">
-              <th className="px-4 py-3">শিরোনাম</th>
-              <th className="px-4 py-3">ক্যাটাগরি</th>
-              <th className="px-4 py-3">স্ট্যাটাস</th>
-              <th className="px-4 py-3">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visible.map((r) => (
-              <tr key={r.id} className="border-b border-gray-700">
-                <td className="px-4 py-3 font-bold">{r.title}</td>
-                <td className="px-4 py-3">{r.category}</td>
-                <td className="px-4 py-3">{r.status}</td>
-                <td className="px-4 py-3 flex gap-2">
-                  <button onClick={() => openEdit(r)} className="px-3 py-1 bg-yellow-600 rounded text-white text-xs">এডিট</button>
-                  <button onClick={() => handleDelete(r.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <PageHeader title="প্রকল্প" action={<PrimaryButton onClick={openAdd}>+ নতুন যোগ করুন</PrimaryButton>} />
+      <DataTable columns={columns} data={rows} searchPlaceholder="শিরোনাম বা ক্যাটাগরি লিখে খুঁজুন..." emptyMessage="কোনো প্রকল্প নেই" />
 
       {showModal && (
         <Modal title={editing ? 'প্রকল্প এডিট করুন' : 'নতুন প্রকল্প'} onClose={() => setShowModal(false)}>

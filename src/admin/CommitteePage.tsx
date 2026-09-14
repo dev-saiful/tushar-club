@@ -1,7 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
 import { supabase } from '../lib/supabase'
 import type { CommitteeMemberRow } from '../lib/db'
 import { PageHeader, Modal, Field, inputClass, PrimaryButton } from './ui'
+import DataTable from './DataTable'
 
 const emptyForm = { name: '', designation: '', phone: '', area: '', role: 'executive' }
 
@@ -50,40 +52,32 @@ export default function CommitteePage() {
     fetchRows()
   }
 
+  const columns = useMemo<ColumnDef<CommitteeMemberRow, unknown>[]>(() => [
+    { accessorKey: 'name', header: 'নাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
+    { accessorKey: 'designation', header: 'পদবি' },
+    { accessorKey: 'phone', header: 'ফোন', cell: (c) => (c.getValue() as string) || '-' },
+    { accessorKey: 'area', header: 'এলাকা' },
+    { accessorKey: 'role', header: 'ভূমিকা' },
+    {
+      id: 'actions',
+      header: 'অ্যাকশন',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-end md:justify-start">
+          <button onClick={() => openEdit(row.original)} className="px-3 py-1 bg-yellow-600 rounded text-white text-xs">এডিট</button>
+          <button onClick={() => handleDelete(row.original.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
+        </div>
+      ),
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [])
+
   if (loading) return <div className="text-white">Loading...</div>
 
   return (
     <div>
       <PageHeader title="কমিটি সদস্য" action={<PrimaryButton onClick={openAdd}>+ নতুন যোগ করুন</PrimaryButton>} />
-      <div className="bg-gray-800 rounded-lg overflow-auto">
-        <table className="w-full text-sm text-gray-200">
-          <thead>
-            <tr className="border-b border-gray-700 text-left">
-              <th className="px-4 py-3">নাম</th>
-              <th className="px-4 py-3">পদবি</th>
-              <th className="px-4 py-3">ফোন</th>
-              <th className="px-4 py-3">এলাকা</th>
-              <th className="px-4 py-3">ভূমিকা</th>
-              <th className="px-4 py-3">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} className="border-b border-gray-700">
-                <td className="px-4 py-3 font-bold">{r.name}</td>
-                <td className="px-4 py-3">{r.designation}</td>
-                <td className="px-4 py-3">{r.phone || '-'}</td>
-                <td className="px-4 py-3">{r.area}</td>
-                <td className="px-4 py-3">{r.role}</td>
-                <td className="px-4 py-3 flex gap-2">
-                  <button onClick={() => openEdit(r)} className="px-3 py-1 bg-yellow-600 rounded text-white text-xs">এডিট</button>
-                  <button onClick={() => handleDelete(r.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable columns={columns} data={rows} searchPlaceholder="নাম, পদবি বা এলাকা লিখে খুঁজুন..." emptyMessage="কোনো সদস্য নেই" />
 
       {showModal && (
         <Modal title={editing ? 'সদস্য এডিট করুন' : 'নতুন সদস্য'} onClose={() => setShowModal(false)}>

@@ -1,7 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
 import { supabase } from '../lib/supabase'
 import type { GalleryItemRow } from '../lib/db'
 import { PageHeader, Modal, Field, inputClass, PrimaryButton } from './ui'
+import DataTable from './DataTable'
 
 const emptyForm = { title: '', category: '', date: '', image_url: '' }
 
@@ -33,23 +35,35 @@ export default function GalleryPage() {
     fetchRows()
   }
 
+  const columns = useMemo<ColumnDef<GalleryItemRow, unknown>[]>(() => [
+    {
+      accessorKey: 'image_url',
+      header: 'ছবি',
+      enableSorting: false,
+      cell: (c) => <img src={c.getValue() as string} alt="" className="w-16 h-12 object-cover rounded" />,
+    },
+    { accessorKey: 'title', header: 'শিরোনাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
+    { accessorKey: 'category', header: 'ক্যাটাগরি' },
+    { accessorKey: 'date', header: 'তারিখ' },
+    {
+      id: 'actions',
+      header: 'অ্যাকশন',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-end md:justify-start">
+          <button onClick={() => handleDelete(row.original.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
+        </div>
+      ),
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [])
+
   if (loading) return <div className="text-white">Loading...</div>
 
   return (
     <div>
       <PageHeader title="গ্যালারি" action={<PrimaryButton onClick={() => setShowModal(true)}>+ নতুন ছবি</PrimaryButton>} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {rows.map((r) => (
-          <div key={r.id} className="bg-gray-800 rounded-lg overflow-hidden">
-            <img src={r.image_url} alt={r.title} className="w-full h-48 object-cover" />
-            <div className="p-4">
-              <h3 className="text-white font-bold text-sm">{r.title}</h3>
-              <p className="text-gray-400 text-xs mt-1">{r.category} • {r.date}</p>
-              <button onClick={() => handleDelete(r.id)} className="mt-3 px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
-            </div>
-          </div>
-        ))}
-      </div>
+      <DataTable columns={columns} data={rows} searchPlaceholder="শিরোনাম বা ক্যাটাগরি লিখে খুঁজুন..." emptyMessage="কোনো ছবি নেই" />
 
       {showModal && (
         <Modal title="নতুন ছবি" onClose={() => setShowModal(false)}>

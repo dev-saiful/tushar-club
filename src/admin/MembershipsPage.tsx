@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
 import { supabase } from '../lib/supabase'
 import type { MembershipApplicationRow } from '../lib/db'
 import { PageHeader, StatusBadge } from './ui'
+import DataTable from './DataTable'
 
 export default function MembershipsPage() {
   const [rows, setRows] = useState<MembershipApplicationRow[]>([])
@@ -27,48 +29,38 @@ export default function MembershipsPage() {
     fetchRows()
   }
 
+  const columns = useMemo<ColumnDef<MembershipApplicationRow, unknown>[]>(() => [
+    { accessorKey: 'full_name', header: 'নাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
+    { accessorKey: 'phone', header: 'ফোন' },
+    { accessorKey: 'blood_group', header: 'গ্রুপ' },
+    { accessorKey: 'address', header: 'ঠিকানা' },
+    { accessorKey: 'member_id', header: 'সদস্য আইডি', cell: (c) => <span className="font-mono">{(c.getValue() as string) || '-'}</span> },
+    { accessorKey: 'status', header: 'স্ট্যাটাস', cell: (c) => <StatusBadge status={c.getValue() as string} /> },
+    {
+      id: 'actions',
+      header: 'অ্যাকশন',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-end md:justify-start">
+          {row.original.status === 'pending' && (
+            <>
+              <button onClick={() => setStatus(row.original, 'approved')} className="px-3 py-1 bg-green-600 rounded text-white text-xs">অনুমোদন</button>
+              <button onClick={() => setStatus(row.original, 'rejected')} className="px-3 py-1 bg-red-600 rounded text-white text-xs">বাতিল</button>
+            </>
+          )}
+          <button onClick={() => handleDelete(row.original.id)} className="px-3 py-1 bg-gray-600 rounded text-white text-xs">মুছুন</button>
+        </div>
+      ),
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [])
+
   if (loading) return <div className="text-white">Loading...</div>
 
   return (
     <div>
       <PageHeader title="সদস্যপদ আবেদন" />
-      <div className="bg-gray-800 rounded-lg overflow-auto">
-        <table className="w-full text-sm text-gray-200">
-          <thead>
-            <tr className="border-b border-gray-700 text-left">
-              <th className="px-4 py-3">নাম</th>
-              <th className="px-4 py-3">ফোন</th>
-              <th className="px-4 py-3">রক্তের গ্রুপ</th>
-              <th className="px-4 py-3">ঠিকানা</th>
-              <th className="px-4 py-3">সদস্য আইডি</th>
-              <th className="px-4 py-3">স্ট্যাটাস</th>
-              <th className="px-4 py-3">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} className="border-b border-gray-700">
-                <td className="px-4 py-3 font-bold">{r.full_name}</td>
-                <td className="px-4 py-3">{r.phone}</td>
-                <td className="px-4 py-3">{r.blood_group}</td>
-                <td className="px-4 py-3">{r.address}</td>
-                <td className="px-4 py-3 font-mono">{r.member_id || '-'}</td>
-                <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
-                <td className="px-4 py-3 flex gap-2">
-                  {r.status === 'pending' && (
-                    <>
-                      <button onClick={() => setStatus(r, 'approved')} className="px-3 py-1 bg-green-600 rounded text-white text-xs">অনুমোদন</button>
-                      <button onClick={() => setStatus(r, 'rejected')} className="px-3 py-1 bg-red-600 rounded text-white text-xs">বাতিল</button>
-                    </>
-                  )}
-                  <button onClick={() => handleDelete(r.id)} className="px-3 py-1 bg-gray-600 rounded text-white text-xs">মুছুন</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {rows.length === 0 && <p className="text-gray-400 p-4 text-center">কোনো আবেদন নেই</p>}
-      </div>
+      <DataTable columns={columns} data={rows} searchPlaceholder="নাম, ফোন বা ঠিকানা লিখে খুঁজুন..." emptyMessage="কোনো আবেদন নেই" />
     </div>
   )
 }

@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
 import { supabase } from '../lib/supabase'
 import type { ContactMessageRow } from '../lib/db'
 import { PageHeader } from './ui'
+import DataTable from './DataTable'
 
 export default function MessagesPage() {
   const [rows, setRows] = useState<ContactMessageRow[]>([])
@@ -26,41 +28,33 @@ export default function MessagesPage() {
     fetchRows()
   }
 
+  const columns = useMemo<ColumnDef<ContactMessageRow, unknown>[]>(() => [
+    { accessorKey: 'name', header: 'নাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
+    { accessorKey: 'phone', header: 'ফোন' },
+    { accessorKey: 'message', header: 'বার্তা' },
+    { accessorKey: 'read', header: 'অবস্থা', cell: (c) => ((c.getValue() as boolean) ? 'পঠিত' : 'অপঠিত') },
+    {
+      id: 'actions',
+      header: 'অ্যাকশন',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-end md:justify-start">
+          {!row.original.read && (
+            <button onClick={() => markRead(row.original.id)} className="px-3 py-1 bg-blue-600 rounded text-white text-xs">পঠিত করুন</button>
+          )}
+          <button onClick={() => handleDelete(row.original.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
+        </div>
+      ),
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [])
+
   if (loading) return <div className="text-white">Loading...</div>
 
   return (
     <div>
       <PageHeader title="বার্তা" />
-      <div className="bg-gray-800 rounded-lg overflow-auto">
-        <table className="w-full text-sm text-gray-200">
-          <thead>
-            <tr className="border-b border-gray-700 text-left">
-              <th className="px-4 py-3">নাম</th>
-              <th className="px-4 py-3">ফোন</th>
-              <th className="px-4 py-3">বার্তা</th>
-              <th className="px-4 py-3">অবস্থা</th>
-              <th className="px-4 py-3">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} className="border-b border-gray-700">
-                <td className="px-4 py-3 font-bold">{r.name}</td>
-                <td className="px-4 py-3">{r.phone}</td>
-                <td className="px-4 py-3 max-w-xs">{r.message}</td>
-                <td className="px-4 py-3">{r.read ? 'পঠিত' : 'অপঠিত'}</td>
-                <td className="px-4 py-3 flex gap-2">
-                  {!r.read && (
-                    <button onClick={() => markRead(r.id)} className="px-3 py-1 bg-blue-600 rounded text-white text-xs">পঠিত করুন</button>
-                  )}
-                  <button onClick={() => handleDelete(r.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {rows.length === 0 && <p className="text-gray-400 p-4 text-center">কোনো বার্তা নেই</p>}
-      </div>
+      <DataTable columns={columns} data={rows} searchPlaceholder="নাম বা বার্তা লিখে খুঁজুন..." emptyMessage="কোনো বার্তা নেই" />
     </div>
   )
 }

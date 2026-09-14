@@ -59,15 +59,15 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 flex">
-      <aside className="w-64 bg-gray-800 text-white p-4 shrink-0">
-        <h2 className="text-xl font-bold mb-6 text-center">অ্যাডমিন প্যানেল</h2>
-        <nav>
+    <div className="min-h-screen bg-gray-900 flex flex-col md:flex-row">
+      <aside className="w-full md:w-64 bg-gray-800 text-white p-4 shrink-0">
+        <h2 className="text-xl font-bold mb-4 md:mb-6 text-center">অ্যাডমিন প্যানেল</h2>
+        <nav className="flex md:block gap-1 overflow-x-auto pb-2 md:pb-0">
           {menuItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
-              className={`block px-4 py-2 rounded mb-1 ${
+              className={`whitespace-nowrap px-4 py-2 rounded mb-0 md:mb-1 block ${
                 location.pathname === item.path
                   ? 'bg-blue-600'
                   : 'hover:bg-gray-700'
@@ -78,21 +78,23 @@ export default function AdminLayout() {
             </Link>
           ))}
         </nav>
-        <Link
-          to="/"
-          className="mt-4 block w-full px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-center"
-        >
-          ওয়েবসাইট দেখুন
-        </Link>
-        <button
-          onClick={handleLogout}
-          className="mt-2 w-full px-4 py-2 bg-red-600 rounded hover:bg-red-700"
-        >
-          লগ আউট
-        </button>
+        <div className="flex md:block gap-2 mt-2 md:mt-4">
+          <Link
+            to="/"
+            className="flex-1 px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 text-center text-sm"
+          >
+            ওয়েবসাইট দেখুন
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="flex-1 mt-0 md:mt-2 px-4 py-2 bg-red-600 rounded hover:bg-red-700 text-sm"
+          >
+            লগ আউট
+          </button>
+        </div>
       </aside>
 
-      <main className="flex-1 p-6 overflow-auto">
+      <main className="flex-1 p-4 md:p-6 overflow-auto">
         <Outlet />
       </main>
     </div>

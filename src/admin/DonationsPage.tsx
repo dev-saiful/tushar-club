@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
 import { supabase } from '../lib/supabase'
 import type { DonationRow } from '../lib/db'
 import { PageHeader, StatusBadge } from './ui'
+import DataTable from './DataTable'
 
 export default function DonationsPage() {
   const [rows, setRows] = useState<DonationRow[]>([])
@@ -26,46 +28,37 @@ export default function DonationsPage() {
     fetchRows()
   }
 
+  const columns = useMemo<ColumnDef<DonationRow, unknown>[]>(() => [
+    { accessorKey: 'donor_name', header: 'দাতার নাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
+    { accessorKey: 'amount', header: 'পরিমাণ' },
+    { accessorKey: 'fund_type', header: 'তহবিল' },
+    { accessorKey: 'trx_id', header: 'TrxID', cell: (c) => <span className="font-mono">{(c.getValue() as string) || '-'}</span> },
+    { accessorKey: 'status', header: 'স্ট্যাটাস', cell: (c) => <StatusBadge status={c.getValue() as string} /> },
+    {
+      id: 'actions',
+      header: 'অ্যাকশন',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-end md:justify-start">
+          {row.original.status === 'pending' && (
+            <>
+              <button onClick={() => setStatus(row.original.id, 'verified')} className="px-3 py-1 bg-green-600 rounded text-white text-xs">যাচাই</button>
+              <button onClick={() => setStatus(row.original.id, 'rejected')} className="px-3 py-1 bg-red-600 rounded text-white text-xs">বাতিল</button>
+            </>
+          )}
+          <button onClick={() => handleDelete(row.original.id)} className="px-3 py-1 bg-gray-600 rounded text-white text-xs">মুছুন</button>
+        </div>
+      ),
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [])
+
   if (loading) return <div className="text-white">Loading...</div>
 
   return (
     <div>
       <PageHeader title="অনুদান" />
-      <div className="bg-gray-800 rounded-lg overflow-auto">
-        <table className="w-full text-sm text-gray-200">
-          <thead>
-            <tr className="border-b border-gray-700 text-left">
-              <th className="px-4 py-3">দাতার নাম</th>
-              <th className="px-4 py-3">পরিমাণ</th>
-              <th className="px-4 py-3">তহবিল</th>
-              <th className="px-4 py-3">TrxID</th>
-              <th className="px-4 py-3">স্ট্যাটাস</th>
-              <th className="px-4 py-3">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.id} className="border-b border-gray-700">
-                <td className="px-4 py-3 font-bold">{r.donor_name}</td>
-                <td className="px-4 py-3">{r.amount}</td>
-                <td className="px-4 py-3">{r.fund_type}</td>
-                <td className="px-4 py-3 font-mono">{r.trx_id || '-'}</td>
-                <td className="px-4 py-3"><StatusBadge status={r.status} /></td>
-                <td className="px-4 py-3 flex gap-2">
-                  {r.status === 'pending' && (
-                    <>
-                      <button onClick={() => setStatus(r.id, 'verified')} className="px-3 py-1 bg-green-600 rounded text-white text-xs">যাচাই</button>
-                      <button onClick={() => setStatus(r.id, 'rejected')} className="px-3 py-1 bg-red-600 rounded text-white text-xs">বাতিল</button>
-                    </>
-                  )}
-                  <button onClick={() => handleDelete(r.id)} className="px-3 py-1 bg-gray-600 rounded text-white text-xs">মুছুন</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {rows.length === 0 && <p className="text-gray-400 p-4 text-center">কোনো অনুদান নেই</p>}
-      </div>
+      <DataTable columns={columns} data={rows} searchPlaceholder="নাম বা তহবিল লিখে খুঁজুন..." emptyMessage="কোনো অনুদান নেই" />
     </div>
   )
 }

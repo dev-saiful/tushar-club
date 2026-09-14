@@ -1,7 +1,9 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import type { ColumnDef } from '@tanstack/react-table'
 import { supabase } from '../lib/supabase'
 import type { BloodDonorRow } from '../lib/db'
 import { PageHeader, Modal, Field, inputClass, PrimaryButton } from './ui'
+import DataTable from './DataTable'
 
 const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
 const emptyForm = { name: '', blood_group: 'O+', phone: '', area: '', last_donation: '', available: true }
@@ -9,7 +11,6 @@ const emptyForm = { name: '', blood_group: 'O+', phone: '', area: '', last_donat
 export default function DonorsPage() {
   const [rows, setRows] = useState<BloodDonorRow[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState('সকল')
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState<BloodDonorRow | null>(null)
   const [form, setForm] = useState(emptyForm)
@@ -52,55 +53,32 @@ export default function DonorsPage() {
     fetchRows()
   }
 
-  const visible = filter === 'সকল' ? rows : rows.filter((r) => r.blood_group === filter)
+  const columns = useMemo<ColumnDef<BloodDonorRow, unknown>[]>(() => [
+    { accessorKey: 'name', header: 'নাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
+    { accessorKey: 'blood_group', header: 'গ্রুপ' },
+    { accessorKey: 'phone', header: 'ফোন' },
+    { accessorKey: 'area', header: 'এলাকা' },
+    { accessorKey: 'available', header: 'উপলব্ধ', cell: (c) => ((c.getValue() as boolean) ? 'হ্যাঁ' : 'না') },
+    {
+      id: 'actions',
+      header: 'অ্যাকশন',
+      enableSorting: false,
+      cell: ({ row }) => (
+        <div className="flex gap-2 justify-end md:justify-start">
+          <button onClick={() => openEdit(row.original)} className="px-3 py-1 bg-yellow-600 rounded text-white text-xs">এডিট</button>
+          <button onClick={() => handleDelete(row.original.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
+        </div>
+      ),
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ], [])
 
   if (loading) return <div className="text-white">Loading...</div>
 
   return (
     <div>
-      <PageHeader
-        title="রক্তদাতা"
-        action={
-          <div className="flex gap-2">
-            <select value={filter} onChange={(e) => setFilter(e.target.value)} className="px-3 py-2 rounded bg-gray-700 text-white text-sm">
-              <option value="সকল">সকল</option>
-              {BLOOD_GROUPS.map((g) => (
-                <option key={g} value={g}>{g}</option>
-              ))}
-            </select>
-            <PrimaryButton onClick={openAdd}>+ নতুন যোগ করুন</PrimaryButton>
-          </div>
-        }
-      />
-      <div className="bg-gray-800 rounded-lg overflow-auto">
-        <table className="w-full text-sm text-gray-200">
-          <thead>
-            <tr className="border-b border-gray-700 text-left">
-              <th className="px-4 py-3">নাম</th>
-              <th className="px-4 py-3">গ্রুপ</th>
-              <th className="px-4 py-3">ফোন</th>
-              <th className="px-4 py-3">এলাকা</th>
-              <th className="px-4 py-3">উপলব্ধ</th>
-              <th className="px-4 py-3">অ্যাকশন</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visible.map((r) => (
-              <tr key={r.id} className="border-b border-gray-700">
-                <td className="px-4 py-3 font-bold">{r.name}</td>
-                <td className="px-4 py-3">{r.blood_group}</td>
-                <td className="px-4 py-3">{r.phone}</td>
-                <td className="px-4 py-3">{r.area}</td>
-                <td className="px-4 py-3">{r.available ? 'হ্যাঁ' : 'না'}</td>
-                <td className="px-4 py-3 flex gap-2">
-                  <button onClick={() => openEdit(r)} className="px-3 py-1 bg-yellow-600 rounded text-white text-xs">এডিট</button>
-                  <button onClick={() => handleDelete(r.id)} className="px-3 py-1 bg-red-600 rounded text-white text-xs">মুছুন</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <PageHeader title="রক্তদাতা" action={<PrimaryButton onClick={openAdd}>+ নতুন যোগ করুন</PrimaryButton>} />
+      <DataTable columns={columns} data={rows} searchPlaceholder="নাম, গ্রুপ বা এলাকা লিখে খুঁজুন..." emptyMessage="কোনো ডোনার নেই" />
 
       {showModal && (
         <Modal title={editing ? 'ডোনার এডিট করুন' : 'নতুন ডোনার'} onClose={() => setShowModal(false)}>
