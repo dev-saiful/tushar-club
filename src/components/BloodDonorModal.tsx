@@ -12,7 +12,7 @@ export const BloodDonorModal: React.FC<BloodDonorModalProps> = ({ isOpen, onClos
   const [donorName, setDonorName] = useState('');
   const [donorPhone, setDonorPhone] = useState('');
   const [bloodGroup, setBloodGroup] = useState('O+');
-  const [donorArea, setDonorArea] = useState('উত্তর গাজীপুর, চাঁদপুর');
+  const [donorArea, setDonorArea] = useState('উত্তর গাজীপুর, মতলব উত্তর, চাঁদপুর');
   const [registered, setRegistered] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -155,7 +155,7 @@ export const BloodDonorModal: React.FC<BloodDonorModalProps> = ({ isOpen, onClos
                 <input
                   type="text"
                   required
-                  placeholder="যেমন: উত্তর গাজীপুর, চাঁদপুর সদর"
+                  placeholder="যেমন: উত্তর গাজীপুর, মতলব উত্তর, চাঁদপুর"
                   value={donorArea}
                   onChange={(e) => setDonorArea(e.target.value)}
                   className="w-full px-3.5 py-2 rounded-lg border border-gray-300 text-xs focus:ring-2 focus:ring-rose-600 focus:outline-none"

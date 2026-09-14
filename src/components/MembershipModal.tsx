@@ -16,7 +16,7 @@ export const MembershipModal: React.FC<MembershipModalProps> = ({ isOpen, onClos
     phone: '',
     bloodGroup: 'B+',
     occupation: 'শিক্ষার্থী',
-    address: 'উত্তর গাজীপুর, চাঁদপুর',
+    address: 'উত্তর গাজীপুর, মতলব উত্তর, চাঁদপুর',
     reason: 'সামাজিক সেবামূলক কাজ ও তরুণদের সাথে ঐক্যবদ্ধ হয়ে এলাকার উন্নয়নে কাজ করতে চাই।'
   });
 
@@ -246,7 +246,7 @@ export const MembershipModal: React.FC<MembershipModalProps> = ({ isOpen, onClos
                 <input
                   type="text"
                   required
-                  placeholder="যেমন: উত্তর গাজীপুর, চাঁদপুর"
+                  placeholder="যেমন: উত্তর গাজীপুর, মতলব উত্তর, চাঁদপুর"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-lg border border-gray-300 text-xs focus:ring-2 focus:ring-[#063b20] focus:outline-none"

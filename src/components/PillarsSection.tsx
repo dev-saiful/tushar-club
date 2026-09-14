@@ -26,7 +26,7 @@ export const PillarsSection: React.FC<PillarsSectionProps> = ({
           </h2>
 
           <p className="text-base sm:text-lg font-bangla text-gray-700 leading-relaxed">
-            {SURJO_TORUN_INFO.nameBn}-র প্রতিটি কার্যক্রম পরিচালিত হয় এই তিনটি মূল নীতির ওপর ভিত্তি করে। আমরা বিশ্বাস করি একটি সচেতন ও মানবিক সমাজ গঠনে শিক্ষা, ঐক্য এবং মানবতার কোনো বিকল্প নেই।
+            {SURJO_TORUN_INFO.nameBn}-র প্রতিটি কার্যক্রম পরিচালিত হয় এই তিনটি মূল নীতির ওপর ভিত্তি করে। আমরা বিশ্বাস করি একটি সচেতন ও মানবিক সমাজ গঠনে শিক্ষা, ঐক্য এবং মানবিকতার কোনো বিকল্প নেই।
           </p>
         </div>
 
@@ -117,7 +117,7 @@ export const PillarsSection: React.FC<PillarsSectionProps> = ({
             </div>
           </div>
 
-          {/* 3. মানবতা (Humanity) */}
+          {/* 3. মানবিকতা (Humanity) */}
           <div className="rounded-2xl bg-white border-2 border-rose-200/80 p-8 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1">
             <div className="space-y-4">
               <div className="w-14 h-14 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
@@ -126,12 +126,12 @@ export const PillarsSection: React.FC<PillarsSectionProps> = ({
 
               <div>
                 <span className="text-xs font-bold text-rose-600 uppercase tracking-widest">৩য় মূলনীতি</span>
-                <h3 className="text-2xl font-bold text-[#063b20] mt-0.5">মানবতা (Humanity)</h3>
+                <h3 className="text-2xl font-bold text-[#063b20] mt-0.5">মানবিকতা (Humanity)</h3>
                 <p className="text-xs font-semibold text-gray-500 mt-1">জরুরি রক্তদান ও আর্তমানবতার সেবা</p>
               </div>
 
               <p className="text-sm text-gray-600 leading-relaxed">
-                যেকোনো মুমূর্ষু রোগীর জন্য তাৎক্ষণিক রক্তের ব্যবস্থা করা, নদীভাঙন ও বন্যায় অসহায় পরিবারে ত্রাণ সামগ্রী বিতরণ, তীব্র শীতে কম্বল বিতরণ এবং অসুস্থদের চিকিৎসা সহায়তা দেওয়া।
+                যেকোনো মুমূর্ষু রোগীর জন্য তাৎক্ষণিক রক্তের ব্যবস্থা করা, বন্যায় অসহায় পরিবারে ত্রাণ সামগ্রী বিতরণ, তীব্র শীতে কম্বল বিতরণ এবং অসুস্থদের চিকিৎসা সহায়তা দেওয়া।
               </p>
 
               <ul className="space-y-2 pt-2 text-xs font-semibold text-gray-700">
@@ -151,7 +151,7 @@ export const PillarsSection: React.FC<PillarsSectionProps> = ({
             </div>
 
             <div className="mt-8 pt-4 border-t border-rose-100 flex items-center justify-between text-xs">
-              <span className="font-bold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-md">৫০০+ রক্তদান রেকর্ড</span>
+              <span className="font-bold text-rose-700 bg-rose-50 px-2.5 py-1 rounded-md">১২০+ রক্তদান রেকর্ড</span>
               <button onClick={onOpenBloodModal} className="font-bold text-rose-700 hover:underline flex items-center gap-1">
                 <span>রক্ত খুঁজুন</span>
                 <ArrowRight className="w-3.5 h-3.5" />

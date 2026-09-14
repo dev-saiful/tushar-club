@@ -54,7 +54,7 @@ function HomePage() {
           onOpenMembership={() => setIsMembershipOpen(true)}
         />
 
-        {/* 3 Core Pillars: শিক্ষা • ঐক্য • মানবতা */}
+        {/* 3 Core Pillars: শিক্ষা • ঐক্য • মানবিকতা */}
         <PillarsSection
           onOpenMembership={() => setIsMembershipOpen(true)}
           onOpenBloodModal={() => setIsBloodModalOpen(true)}

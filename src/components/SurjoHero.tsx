@@ -60,7 +60,7 @@ export const SurjoHero: React.FC<SurjoHeroProps> = ({
 
             {/* Inspiring Statement */}
             <p className="text-emerald-100/90 font-bangla text-base sm:text-lg max-w-2xl leading-relaxed mx-auto lg:mx-0">
-              চাঁদপুরের উত্তর গাজীপুর এলাকার শিক্ষা বিস্তার, যুব সমাজকে ঐক্যবদ্ধ করে ক্রীড়াঙ্গনে সম্পৃক্ত রাখা এবং মানবতার সেবায় জরুরি রক্তদান ও মানবিক সহায়তার এক অবিচল ঠিকানা।
+              চাঁদপুর মতলবের উত্তর গাজীপুর এলাকার শিক্ষা বিস্তার, যুব সমাজকে ঐক্যবদ্ধ করে ক্রীড়াঙ্গনে সম্পৃক্ত রাখা এবং মানবতার সেবায় জরুরি মানবিক সহায়তার এক অবিচল ঠিকানা।
             </p>
 
             {/* Contact & Hotline Bar */}
@@ -140,7 +140,7 @@ export const SurjoHero: React.FC<SurjoHeroProps> = ({
                     {SURJO_TORUN_INFO.nature}
                   </p>
                   <p className="text-xs text-gray-300 font-sans mt-0.5">
-                    Chandpur, Bangladesh
+                    Matlab Uttar, Chandpur, Bangladesh
                   </p>
                 </div>
               </div>
