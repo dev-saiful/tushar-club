@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SurjoNavbar } from './components/SurjoNavbar';
 import { SurjoHero } from './components/SurjoHero';
 import { AboutSection } from './components/AboutSection';
@@ -13,8 +14,19 @@ import { BloodDonorModal } from './components/BloodDonorModal';
 import { DonationModal } from './components/DonationModal';
 import { Phone, Droplet, UserPlus } from 'lucide-react';
 import { SURJO_TORUN_INFO } from './data/clubData';
+import AdminLayout from './admin/AdminLayout';
+import LoginPage from './admin/LoginPage';
+import Dashboard from './admin/Dashboard';
+import CommitteePage from './admin/CommitteePage';
+import DonorsPage from './admin/DonorsPage';
+import ProjectsPage from './admin/ProjectsPage';
+import GalleryPage from './admin/GalleryPage';
+import MembershipsPage from './admin/MembershipsPage';
+import BloodRequestsPage from './admin/BloodRequestsPage';
+import DonationsPage from './admin/DonationsPage';
+import MessagesPage from './admin/MessagesPage';
 
-export default function App() {
+function HomePage() {
   const [isMembershipOpen, setIsMembershipOpen] = useState(false);
   const [isBloodModalOpen, setIsBloodModalOpen] = useState(false);
   const [isDonationOpen, setIsDonationOpen] = useState(false);
@@ -112,5 +124,27 @@ export default function App() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/admin/login" element={<LoginPage />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="committee" element={<CommitteePage />} />
+          <Route path="donors" element={<DonorsPage />} />
+          <Route path="projects" element={<ProjectsPage />} />
+          <Route path="gallery" element={<GalleryPage />} />
+          <Route path="memberships" element={<MembershipsPage />} />
+          <Route path="blood-requests" element={<BloodRequestsPage />} />
+          <Route path="donations" element={<DonationsPage />} />
+          <Route path="messages" element={<MessagesPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }

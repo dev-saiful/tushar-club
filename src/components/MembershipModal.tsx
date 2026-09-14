@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, CheckCircle2, UserPlus, Sparkles, Download, ShieldCheck, Phone, MapPin } from 'lucide-react';
 import { SURJO_TORUN_INFO } from '../data/clubData';
 import { ClubLogo } from './ClubLogo';
+import { supabase } from '../lib/supabase';
 
 interface MembershipModalProps {
   isOpen: boolean;
@@ -26,12 +27,31 @@ export const MembershipModal: React.FC<MembershipModalProps> = ({ isOpen, onClos
     bloodGroup: string;
     date: string;
   } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
+    setSubmitError('');
     const token = `STC-${Math.floor(1000 + Math.random() * 9000)}`;
+    const { error } = await supabase.from('membership_applications').insert({
+      full_name: formData.fullName,
+      father_name: formData.fatherName,
+      phone: formData.phone,
+      blood_group: formData.bloodGroup,
+      occupation: formData.occupation,
+      address: formData.address,
+      reason: formData.reason,
+      member_id: token,
+    });
+    setSubmitting(false);
+    if (error) {
+      setSubmitError('আবেদন জমা দেওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      return;
+    }
     setSubmittedCard({
       id: token,
       name: formData.fullName,
@@ -245,6 +265,12 @@ export const MembershipModal: React.FC<MembershipModalProps> = ({ isOpen, onClos
                 />
               </div>
 
+              {submitError && (
+                <div className="p-3 bg-red-50 rounded-xl text-xs text-red-800 border border-red-200">
+                  {submitError}
+                </div>
+              )}
+
               <div className="pt-2 flex items-center justify-end gap-3">
                 <button
                   type="button"
@@ -255,10 +281,11 @@ export const MembershipModal: React.FC<MembershipModalProps> = ({ isOpen, onClos
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-[#063b20] hover:bg-[#042816] text-[#fef3c7] text-xs font-bold shadow-md flex items-center gap-2"
+                  disabled={submitting}
+                  className="px-6 py-2.5 rounded-xl bg-[#063b20] hover:bg-[#042816] text-[#fef3c7] text-xs font-bold shadow-md flex items-center gap-2 disabled:opacity-50"
                 >
                   <UserPlus className="w-4 h-4 text-amber-400" />
-                  <span>আবেদন জমা দিন</span>
+                  <span>{submitting ? 'জমা হচ্ছে...' : 'আবেদন জমা দিন'}</span>
                 </button>
               </div>
             </form>

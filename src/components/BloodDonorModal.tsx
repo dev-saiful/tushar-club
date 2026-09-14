@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Droplet, Phone, CheckCircle2, AlertCircle } from 'lucide-react';
 import { SURJO_TORUN_INFO } from '../data/clubData';
+import { supabase } from '../lib/supabase';
 
 interface BloodDonorModalProps {
   isOpen: boolean;
@@ -13,11 +14,26 @@ export const BloodDonorModal: React.FC<BloodDonorModalProps> = ({ isOpen, onClos
   const [bloodGroup, setBloodGroup] = useState('O+');
   const [donorArea, setDonorArea] = useState('উত্তর গাজীপুর, চাঁদপুর');
   const [registered, setRegistered] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
+    setSubmitError('');
+    const { error } = await supabase.from('blood_donor_registrations').insert({
+      donor_name: donorName,
+      donor_phone: donorPhone,
+      blood_group: bloodGroup,
+      donor_area: donorArea,
+    });
+    setSubmitting(false);
+    if (error) {
+      setSubmitError('নিবন্ধন সম্পন্ন করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      return;
+    }
     setRegistered(true);
   };
 
@@ -146,6 +162,12 @@ export const BloodDonorModal: React.FC<BloodDonorModalProps> = ({ isOpen, onClos
                 />
               </div>
 
+              {submitError && (
+                <div className="p-3 bg-red-50 rounded-xl text-xs text-red-800 border border-red-200">
+                  {submitError}
+                </div>
+              )}
+
               <div className="pt-2 flex items-center justify-end gap-3">
                 <button
                   type="button"
@@ -156,10 +178,11 @@ export const BloodDonorModal: React.FC<BloodDonorModalProps> = ({ isOpen, onClos
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-md flex items-center gap-2"
+                  disabled={submitting}
+                  className="px-6 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold shadow-md flex items-center gap-2 disabled:opacity-50"
                 >
                   <Droplet className="w-4 h-4 fill-white" />
-                  <span>নিবন্ধন সম্পন্ন করুন</span>
+                  <span>{submitting ? 'জমা হচ্ছে...' : 'নিবন্ধন সম্পন্ন করুন'}</span>
                 </button>
               </div>
             </form>

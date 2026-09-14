@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Heart, CheckCircle2, Copy, Check, Sparkles } from 'lucide-react';
 import { SURJO_TORUN_INFO } from '../data/clubData';
 import { ClubLogo } from './ClubLogo';
+import { supabase } from '../lib/supabase';
 
 interface DonationModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose })
     fund: string;
     date: string;
   } | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   if (!isOpen) return null;
 
@@ -30,8 +33,21 @@ export const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose })
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitting(true);
+    setSubmitError('');
+    const { error } = await supabase.from('donations').insert({
+      donor_name: donorName,
+      amount: parseFloat(amount) || 0,
+      fund_type: fundType,
+      trx_id: trxId || null,
+    });
+    setSubmitting(false);
+    if (error) {
+      setSubmitError('অনুদান জমা দেওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      return;
+    }
     setReceipt({
       id: `DON-${Math.floor(10000 + Math.random() * 90000)}`,
       name: donorName,
@@ -193,6 +209,12 @@ export const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose })
                 />
               </div>
 
+              {submitError && (
+                <div className="p-3 bg-red-50 rounded-xl text-xs text-red-800 border border-red-200">
+                  {submitError}
+                </div>
+              )}
+
               <div className="pt-2 flex items-center justify-end gap-3">
                 <button
                   type="button"
@@ -203,10 +225,11 @@ export const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose })
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-[#042816] text-xs font-bold shadow-md flex items-center gap-2"
+                  disabled={submitting}
+                  className="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-[#042816] text-xs font-bold shadow-md flex items-center gap-2 disabled:opacity-50"
                 >
                   <Heart className="w-4 h-4 fill-current" />
-                  <span>রশিদ সংগ্রহ করুন</span>
+                  <span>{submitting ? 'জমা হচ্ছে...' : 'রশিদ সংগ্রহ করুন'}</span>
                 </button>
               </div>
             </form>

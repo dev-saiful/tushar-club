@@ -1,8 +1,11 @@
 import React from 'react';
 import { Camera, Calendar, Tag } from 'lucide-react';
 import { GALLERY_ITEMS } from '../data/clubData';
+import { useGalleryItems } from '../hooks/useGalleryItems';
 
 export const GallerySection: React.FC = () => {
+  const { items } = useGalleryItems();
+  const galleryList = items.length > 0 ? items : GALLERY_ITEMS;
   return (
     <section id="gallery" className="py-20 bg-[#f8faf8] border-b border-emerald-900/10 font-bangla">
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
@@ -25,7 +28,7 @@ export const GallerySection: React.FC = () => {
 
         {/* Gallery Grid */}
         <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {GALLERY_ITEMS.map((item) => (
+          {galleryList.map((item) => (
             <div
               key={item.id}
               className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 bg-white"

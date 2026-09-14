@@ -12,6 +12,7 @@ import {
   HeartHandshake
 } from 'lucide-react';
 import { BLOOD_DONORS, SURJO_TORUN_INFO, BloodDonor } from '../data/clubData';
+import { useBloodDonors } from '../hooks/useBloodDonors';
 
 interface BloodNetworkSectionProps {
   onOpenDonorRegister: () => void;
@@ -25,7 +26,10 @@ export const BloodNetworkSection: React.FC<BloodNetworkSectionProps> = ({
 
   const bloodGroups = ['সকল', 'A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
-  const filteredDonors = BLOOD_DONORS.filter((donor) => {
+  const { donors } = useBloodDonors();
+  const donorList: BloodDonor[] = donors.length > 0 ? donors : BLOOD_DONORS;
+
+  const filteredDonors = donorList.filter((donor) => {
     const matchesGroup = selectedGroup === 'সকল' || donor.bloodGroup === selectedGroup;
     const matchesSearch = searchTerm === '' || 
       donor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

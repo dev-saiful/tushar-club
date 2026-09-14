@@ -12,13 +12,25 @@ import {
 } from 'lucide-react';
 import { SURJO_TORUN_INFO } from '../data/clubData';
 import { ClubLogo } from './ClubLogo';
+import { supabase } from '../lib/supabase';
 
 export const SurjoFooter: React.FC = () => {
   const [message, setMessage] = useState({ name: '', phone: '', text: '' });
   const [sent, setSent] = useState(false);
+  const [sendError, setSendError] = useState('');
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSendError('');
+    const { error } = await supabase.from('contact_messages').insert({
+      name: message.name,
+      phone: message.phone,
+      message: message.text,
+    });
+    if (error) {
+      setSendError('বার্তা পাঠানো যায়নি। আবার চেষ্টা করুন।');
+      return;
+    }
     setSent(true);
     setTimeout(() => {
       setSent(false);
@@ -145,6 +157,10 @@ export const SurjoFooter: React.FC = () => {
                 onChange={(e) => setMessage({ ...message, text: e.target.value })}
                 className="w-full px-3 py-2 rounded-lg bg-black/40 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-amber-400"
               />
+
+              {sendError && (
+                <span className="text-[11px] text-red-400 font-bold">{sendError}</span>
+              )}
 
               <div className="flex items-center justify-between">
                 {sent && (

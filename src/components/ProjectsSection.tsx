@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import { Sparkles, Calendar, CheckCircle2, ArrowUpRight, Filter } from 'lucide-react';
 import { CLUB_PROJECTS, SURJO_TORUN_INFO } from '../data/clubData';
+import { useProjects } from '../hooks/useProjects';
 
 export const ProjectsSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('সকল');
+  const { projects } = useProjects();
+  const projectList = projects.length > 0 ? projects : CLUB_PROJECTS;
 
   const categories = ['সকল', 'শিক্ষা', 'ঐক্য', 'মানবতা', 'পরিবেশ'];
 
   const filteredProjects = selectedCategory === 'সকল'
-    ? CLUB_PROJECTS
-    : CLUB_PROJECTS.filter(p => p.category === selectedCategory);
+    ? projectList
+    : projectList.filter(p => p.category === selectedCategory);
 
   return (
     <section id="projects" className="py-20 bg-white border-b border-emerald-900/10 font-bangla">

@@ -1,11 +1,14 @@
 import React from 'react';
 import { Users, Award, Shield, Phone, MapPin } from 'lucide-react';
 import { COMMITTEE_MEMBERS, SURJO_TORUN_INFO } from '../data/clubData';
+import { useCommitteeMembers } from '../hooks/useCommitteeMembers';
 
 export const CommitteeSection: React.FC = () => {
-  const advisors = COMMITTEE_MEMBERS.filter(m => m.role === 'advisor');
-  const executives = COMMITTEE_MEMBERS.filter(m => m.role === 'executive');
-  const coordinators = COMMITTEE_MEMBERS.filter(m => m.role === 'coordinator');
+  const { members } = useCommitteeMembers();
+  const list = members.length > 0 ? members : COMMITTEE_MEMBERS;
+  const advisors = list.filter(m => m.role === 'advisor');
+  const executives = list.filter(m => m.role === 'executive');
+  const coordinators = list.filter(m => m.role === 'coordinator');
 
   return (
     <section id="committee" className="py-20 bg-white border-b border-emerald-900/10 font-bangla">
