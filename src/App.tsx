@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import { SurjoNavbar } from './components/SurjoNavbar';
 import { SurjoHero } from './components/SurjoHero';
 import { AboutSection } from './components/AboutSection';
@@ -127,6 +127,34 @@ function HomePage() {
   );
 }
 
+function NotFoundPage() {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#fbfdfb] text-[#132a1c] font-bangla px-4 text-center">
+      <div className="text-7xl sm:text-8xl font-extrabold text-[#063b20]">৪০৪</div>
+      <h1 className="mt-4 text-2xl sm:text-3xl font-extrabold text-[#063b20]">
+        দুঃখিত, পৃষ্ঠাটি পাওয়া যায়নি
+      </h1>
+      <p className="mt-2 text-gray-600 max-w-md">
+        আপনি যে ঠিকানায় যেতে চেয়েছেন সেটি ভুল অথবা মুছে ফেলা হয়েছে।
+      </p>
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          to="/"
+          className="px-6 py-3 rounded-xl bg-[#063b20] text-[#fef3c7] font-bold text-sm hover:bg-[#042816] transition"
+        >
+          হোমপেজে ফিরে যান
+        </Link>
+        <a
+          href={`tel:${SURJO_TORUN_INFO.phoneTel}`}
+          className="px-6 py-3 rounded-xl bg-amber-400 text-[#042816] font-bold text-sm hover:bg-amber-300 transition"
+        >
+          হটলাইন: {SURJO_TORUN_INFO.phone}
+        </a>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -143,7 +171,9 @@ export default function App() {
           <Route path="blood-requests" element={<BloodRequestsPage />} />
           <Route path="donations" element={<DonationsPage />} />
           <Route path="messages" element={<MessagesPage />} />
+          <Route path="*" element={<Navigate to="/admin" replace />} />
         </Route>
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );
