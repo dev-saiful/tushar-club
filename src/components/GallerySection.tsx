@@ -1,15 +1,15 @@
-import React from 'react';
-import { Camera, Calendar, Tag } from 'lucide-react';
-import { GALLERY_ITEMS } from '../data/clubData';
-import { useGalleryItems } from '../hooks/useGalleryItems';
+import React from "react";
+import { Camera, Calendar, Tag } from "lucide-react";
+import { useGalleryItems } from "../hooks/useGalleryItems";
 
 export const GallerySection: React.FC = () => {
-  const { items } = useGalleryItems();
-  const galleryList = items.length > 0 ? items : GALLERY_ITEMS;
+  const { items, loading } = useGalleryItems();
   return (
-    <section id="gallery" className="py-20 bg-[#f8faf8] border-b border-emerald-900/10 font-bangla">
+    <section
+      id="gallery"
+      className="py-20 bg-[#f8faf8] border-b border-emerald-900/10 font-bangla"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
-        
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-[#063b20] text-xs font-bold uppercase tracking-wider">
@@ -22,43 +22,53 @@ export const GallerySection: React.FC = () => {
           </h2>
 
           <p className="text-gray-600 text-base">
-            উত্তর গাজীপুর সূর্যতরুণ ক্লাবের বিভিন্ন সমাজসেবামূলক ক্যাম্প, ফুটবল টুর্নামেন্ট, রক্তদান ও ত্রাণ বিতরণের বাস্তব মুহূর্তসমূহ।
+            উত্তর গাজীপুর সূর্যতরুণ ক্লাবের বিভিন্ন সমাজসেবামূলক ক্যাম্প, ফুটবল
+            টুর্নামেন্ট, রক্তদান ও ত্রাণ বিতরণের বাস্তব মুহূর্তসমূহ।
           </p>
         </div>
 
         {/* Gallery Grid */}
-        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {galleryList.map((item) => (
-            <div
-              key={item.id}
-              className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 bg-white"
-            >
-              <div className="h-60 overflow-hidden bg-gray-100 relative">
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+        {loading ? (
+          <p className="mt-12 text-center text-gray-500">
+            গ্যালারির তথ্য লোড হচ্ছে...
+          </p>
+        ) : items.length === 0 ? (
+          <p className="mt-12 text-center text-gray-500">
+            কোনো গ্যালারি আইটেম পাওয়া যায়নি।
+          </p>
+        ) : (
+          <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {items.map((item) => (
+              <div
+                key={item.id}
+                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-200 bg-white"
+              >
+                <div className="h-60 overflow-hidden bg-gray-100 relative">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
 
-                <div className="absolute bottom-3 left-3 right-3 text-white">
-                  <div className="flex items-center gap-2 text-[11px] text-amber-300 mb-1">
-                    <Tag className="w-3 h-3" />
-                    <span>{item.category}</span>
-                    <span>•</span>
-                    <Calendar className="w-3 h-3" />
-                    <span>{item.date}</span>
+                  <div className="absolute bottom-3 left-3 right-3 text-white">
+                    <div className="flex items-center gap-2 text-[11px] text-amber-300 mb-1">
+                      <Tag className="w-3 h-3" />
+                      <span>{item.category}</span>
+                      <span>•</span>
+                      <Calendar className="w-3 h-3" />
+                      <span>{item.date}</span>
+                    </div>
+                    <h4 className="font-bold text-sm leading-snug">
+                      {item.title}
+                    </h4>
                   </div>
-                  <h4 className="font-bold text-sm leading-snug">
-                    {item.title}
-                  </h4>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
