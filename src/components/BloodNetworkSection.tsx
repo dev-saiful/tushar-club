@@ -157,10 +157,17 @@ export const BloodNetworkSection: React.FC<BloodNetworkSectionProps> = ({
                       {donor.bloodGroup}
                     </span>
 
-                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      প্রস্তুত
-                    </span>
+                    {donor.available ? (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        প্রস্তুত
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gray-100 text-gray-500 flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-gray-400" />
+                        অপ্রস্তুত
+                      </span>
+                    )}
                   </div>
 
                   <div>

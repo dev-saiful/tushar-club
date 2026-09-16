@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { ArrowUpRight } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 interface Stats {
@@ -13,6 +15,7 @@ interface Stats {
 }
 
 export default function Dashboard() {
+  const navigate = useNavigate()
   const [stats, setStats] = useState<Stats>({
     committee: 0,
     donors: 0,
@@ -68,14 +71,14 @@ export default function Dashboard() {
   }
 
   const statCards = [
-    { label: 'কমিটি সদস্য', value: stats.committee, color: 'bg-blue-600' },
-    { label: 'রক্তদাতা', value: stats.donors, color: 'bg-red-600' },
-    { label: 'প্রকল্প', value: stats.projects, color: 'bg-green-600' },
-    { label: 'গ্যালারি', value: stats.gallery, color: 'bg-purple-600' },
-    { label: 'পেন্ডিং সদস্যপদ', value: stats.pendingMemberships, color: 'bg-yellow-600' },
-    { label: 'পেন্ডিং রক্ত অনুরোধ', value: stats.pendingBloodRequests, color: 'bg-orange-600' },
-    { label: 'পেন্ডিং দান', value: stats.pendingDonations, color: 'bg-teal-600' },
-    { label: 'অপঠিত বার্তা', value: stats.unreadMessages, color: 'bg-pink-600' },
+    { label: 'কমিটি সদস্য', value: stats.committee, color: 'bg-blue-600', path: '/admin/committee' },
+    { label: 'রক্তদাতা', value: stats.donors, color: 'bg-red-600', path: '/admin/donors' },
+    { label: 'প্রকল্প', value: stats.projects, color: 'bg-green-600', path: '/admin/projects' },
+    { label: 'গ্যালারি', value: stats.gallery, color: 'bg-purple-600', path: '/admin/gallery' },
+    { label: 'পেন্ডিং সদস্যপদ', value: stats.pendingMemberships, color: 'bg-yellow-600', path: '/admin/memberships' },
+    { label: 'পেন্ডিং রক্তদাতা নিবন্ধন', value: stats.pendingBloodRequests, color: 'bg-orange-600', path: '/admin/blood-requests' },
+    { label: 'পেন্ডিং দান', value: stats.pendingDonations, color: 'bg-teal-600', path: '/admin/donations' },
+    { label: 'অপঠিত বার্তা', value: stats.unreadMessages, color: 'bg-pink-600', path: '/admin/messages' },
   ]
 
   return (
@@ -83,10 +86,17 @@ export default function Dashboard() {
       <h1 className="text-2xl font-bold text-white mb-6">ড্যাশবোর্ড</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card) => (
-          <div key={card.label} className={`${card.color} p-6 rounded-lg`}>
-            <h3 className="text-white text-lg">{card.label}</h3>
+          <button
+            key={card.label}
+            onClick={() => navigate(card.path)}
+            className={`${card.color} group p-6 rounded-lg text-left cursor-pointer transition-all duration-200 hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-white/70`}
+          >
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="text-white text-lg">{card.label}</h3>
+              <ArrowUpRight className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
+            </div>
             <p className="text-white text-3xl font-bold">{card.value}</p>
-          </div>
+          </button>
         ))}
       </div>
     </div>

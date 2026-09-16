@@ -19,7 +19,42 @@ export default function MembershipsPage() {
 
   const setStatus = async (row: MembershipApplicationRow, status: 'approved' | 'rejected') => {
     const member_id = status === 'approved' ? (row.member_id || `STC-${Math.floor(1000 + Math.random() * 9000)}`) : row.member_id
-    await supabase.from('membership_applications').update({ status, member_id }).eq('id', row.id)
+    const { error } = await supabase.from('membership_applications').update({ status, member_id }).eq('id', row.id)
+    if (error) {
+      alert('আবেদন আপডেট করা যায়নি: ' + error.message)
+      return
+    }
+    if (status === 'approved') {
+      // Approved member is added to the existing committee list and blood donor list
+      const { data: existingCommittee } = await supabase
+        .from('committee_members')
+        .select('id')
+        .eq('phone', row.phone)
+        .maybeSingle()
+      if (!existingCommittee) {
+        await supabase.from('committee_members').insert({
+          name: row.full_name,
+          designation: 'সদস্য',
+          phone: row.phone,
+          area: row.address,
+          role: 'executive',
+        })
+      }
+      const { data: existingDonor } = await supabase
+        .from('blood_donors')
+        .select('id')
+        .eq('phone', row.phone)
+        .maybeSingle()
+      if (!existingDonor) {
+        await supabase.from('blood_donors').insert({
+          name: row.full_name,
+          blood_group: row.blood_group,
+          phone: row.phone,
+          area: row.address,
+          available: true,
+        })
+      }
+    }
     fetchRows()
   }
 

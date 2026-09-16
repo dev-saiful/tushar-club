@@ -166,7 +166,7 @@ export const SurjoHero: React.FC<SurjoHeroProps> = ({
           
           <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-emerald-500/30 text-center">
             <Droplet className="w-6 h-6 text-rose-400 mx-auto mb-1 fill-rose-400" />
-            <div className="text-2xl sm:text-3xl font-extrabold text-white">৫২০+ ব্যাগ</div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-white">১২০+ ব্যাগ</div>
             <span className="text-xs text-emerald-200 font-medium">রক্তদান ও জরুরি সমন্বয়</span>
           </div>
 
@@ -178,7 +178,7 @@ export const SurjoHero: React.FC<SurjoHeroProps> = ({
 
           <div className="p-4 rounded-xl bg-white/10 backdrop-blur-sm border border-emerald-500/30 text-center">
             <Heart className="w-6 h-6 text-rose-300 mx-auto mb-1 fill-rose-300" />
-            <div className="text-2xl sm:text-3xl font-extrabold text-white">১২০০+ পরিবার</div>
+            <div className="text-2xl sm:text-3xl font-extrabold text-white">১৫০+ পরিবার</div>
             <span className="text-xs text-emerald-200 font-medium">শীতবস্ত্র ও খাদ্য সামগ্রী</span>
           </div>
 

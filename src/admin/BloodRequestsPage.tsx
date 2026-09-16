@@ -17,8 +17,32 @@ export default function BloodRequestsPage() {
 
   useEffect(() => { fetchRows() }, [])
 
-  const setStatus = async (id: string, status: 'verified' | 'rejected') => {
-    await supabase.from('blood_donor_registrations').update({ status }).eq('id', id)
+  const setStatus = async (row: BloodDonorRegistrationRow, status: 'verified' | 'rejected') => {
+    const { error } = await supabase.from('blood_donor_registrations').update({ status }).eq('id', row.id)
+    if (error) {
+      alert('নিবন্ধন আপডেট করা যায়নি: ' + error.message)
+      return
+    }
+    if (status === 'verified') {
+      // Verified donor is added to the blood donor list shown on the website and admin panel
+      const { data: existingDonor } = await supabase
+        .from('blood_donors')
+        .select('id')
+        .eq('phone', row.donor_phone)
+        .maybeSingle()
+      if (!existingDonor) {
+        const { error: insertError } = await supabase.from('blood_donors').insert({
+          name: row.donor_name,
+          blood_group: row.blood_group,
+          phone: row.donor_phone,
+          area: row.donor_area,
+          available: true,
+        })
+        if (insertError) {
+          alert('রক্তদাতার তালিকায় যোগ করা যায়নি: ' + insertError.message)
+        }
+      }
+    }
     fetchRows()
   }
 
@@ -42,8 +66,8 @@ export default function BloodRequestsPage() {
         <div className="flex gap-2 justify-end md:justify-start">
           {row.original.status === 'pending' && (
             <>
-              <button onClick={() => setStatus(row.original.id, 'verified')} className="px-3 py-1 bg-green-600 rounded text-white text-xs">যাচাই</button>
-              <button onClick={() => setStatus(row.original.id, 'rejected')} className="px-3 py-1 bg-red-600 rounded text-white text-xs">বাতিল</button>
+              <button onClick={() => setStatus(row.original, 'verified')} className="px-3 py-1 bg-green-600 rounded text-white text-xs">যাচাই</button>
+              <button onClick={() => setStatus(row.original, 'rejected')} className="px-3 py-1 bg-red-600 rounded text-white text-xs">বাতিল</button>
             </>
           )}
           <button onClick={() => handleDelete(row.original.id)} className="px-3 py-1 bg-gray-600 rounded text-white text-xs">মুছুন</button>
@@ -57,7 +81,7 @@ export default function BloodRequestsPage() {
 
   return (
     <div>
-      <PageHeader title="রক্তদাতা নিবন্ধন" />
+      <PageHeader title="রক্তদাতা নিবন্ধন অনুরোধ" />
       <DataTable columns={columns} data={rows} searchPlaceholder="নাম, ফোন বা এলাকা লিখে খুঁজুন..." emptyMessage="কোনো নিবন্ধন নেই" />
     </div>
   )
