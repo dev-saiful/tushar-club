@@ -7,6 +7,7 @@ export interface CommitteeMemberRow {
   phone: string | null
   area: string
   role: 'executive' | 'advisor' | 'coordinator'
+  photo_url: string | null
   created_at: string
 }
 
@@ -54,6 +55,7 @@ export interface MembershipApplicationRow {
   reason: string | null
   status: 'pending' | 'approved' | 'rejected'
   member_id: string | null
+  photo_url: string | null
   created_at: string
 }
 

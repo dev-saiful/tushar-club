@@ -10,6 +10,7 @@ function mapRow(row: CommitteeMemberRow): CommitteeMember {
     phone: row.phone || undefined,
     area: row.area,
     role: row.role,
+    photoUrl: row.photo_url || undefined,
   };
 }
 
@@ -21,7 +22,8 @@ export function useCommitteeMembers() {
     const fetchMembers = async () => {
       const { data, error } = await supabase
         .from("committee_members")
-        .select("id, name, designation, phone, area, role, created_at")
+        // select("*") so the section keeps rendering even before the photo_url migration is applied
+        .select("*")
         .order("created_at", { ascending: true });
 
       if (!error && data) {

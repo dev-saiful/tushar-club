@@ -9,6 +9,44 @@ import {
 import { SURJO_TORUN_INFO } from "../data/clubData";
 import { useProjects } from "../hooks/useProjects";
 
+/** Mirrors the project card so the grid doesn't jump when data arrives. */
+const ProjectCardSkeleton: React.FC = () => (
+  <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm flex flex-col">
+    <div className="h-52 bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse" />
+
+    <div className="p-6 flex-1 space-y-4">
+      <div className="space-y-2">
+        <div className="h-5 w-4/5 rounded-full bg-gray-200 animate-pulse" />
+        <div className="h-3 w-full rounded-full bg-gray-100 animate-pulse" />
+        <div className="h-3 w-11/12 rounded-full bg-gray-100 animate-pulse" />
+        <div className="h-3 w-2/3 rounded-full bg-gray-100 animate-pulse" />
+      </div>
+
+      <div className="pt-2 border-t border-gray-100 space-y-2">
+        <div className="h-2.5 w-24 rounded-full bg-gray-200 animate-pulse" />
+        <div className="h-3 w-3/4 rounded-full bg-gray-100 animate-pulse" />
+        <div className="h-3 w-2/3 rounded-full bg-gray-100 animate-pulse" />
+      </div>
+
+      <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+        <div className="h-6 w-24 rounded-lg bg-gray-100 animate-pulse" />
+        <div className="h-3 w-16 rounded-full bg-gray-200 animate-pulse" />
+      </div>
+    </div>
+  </div>
+);
+
+const ProjectsSkeleton: React.FC = () => (
+  <div aria-busy="true" aria-live="polite">
+    <span className="sr-only">প্রকল্পের তথ্য লোড হচ্ছে...</span>
+    <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {Array.from({ length: 6 }).map((_, idx) => (
+        <ProjectCardSkeleton key={idx} />
+      ))}
+    </div>
+  </div>
+);
+
 export const ProjectsSection: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("সকল");
   const { projects, loading } = useProjects();
@@ -64,9 +102,7 @@ export const ProjectsSection: React.FC = () => {
 
         {/* Projects Grid */}
         {loading ? (
-          <p className="mt-12 text-center text-gray-500">
-            প্রকল্পের তথ্য লোড হচ্ছে...
-          </p>
+          <ProjectsSkeleton />
         ) : filteredProjects.length === 0 ? (
           <p className="mt-12 text-center text-gray-500">
             কোনো প্রকল্পের তথ্য পাওয়া যায়নি।

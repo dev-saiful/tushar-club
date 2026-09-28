@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 import type { GalleryItemRow } from "../lib/db";
 import { PageHeader, Modal, Field, inputClass, PrimaryButton } from "./ui";
 import DataTable from "./DataTable";
-import ImageUpload from "./ImageUpload";
+import ImageUpload from "../components/ImageUpload";
 
 const emptyForm = { title: "", category: "", date: "", image_url: "" };
 

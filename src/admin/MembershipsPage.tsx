@@ -28,7 +28,7 @@ export default function MembershipsPage() {
       // Approved member is added to the existing committee list and blood donor list
       const { data: existingCommittee } = await supabase
         .from('committee_members')
-        .select('id')
+        .select('id, photo_url')
         .eq('phone', row.phone)
         .maybeSingle()
       if (!existingCommittee) {
@@ -38,7 +38,11 @@ export default function MembershipsPage() {
           phone: row.phone,
           area: row.address,
           role: 'executive',
+          photo_url: row.photo_url,
         })
+      } else if (row.photo_url && !existingCommittee.photo_url) {
+        // Fill in the photo the applicant uploaded without overwriting an admin-set one
+        await supabase.from('committee_members').update({ photo_url: row.photo_url }).eq('id', existingCommittee.id)
       }
       const { data: existingDonor } = await supabase
         .from('blood_donors')
@@ -65,6 +69,21 @@ export default function MembershipsPage() {
   }
 
   const columns = useMemo<ColumnDef<MembershipApplicationRow, unknown>[]>(() => [
+    {
+      id: 'photo_url',
+      header: 'ছবি',
+      enableSorting: false,
+      cell: ({ row }) =>
+        row.original.photo_url ? (
+          <img
+            src={row.original.photo_url}
+            alt={row.original.full_name}
+            className="w-10 h-10 rounded-full object-cover border border-gray-600"
+          />
+        ) : (
+          <span className="text-gray-500">-</span>
+        ),
+    },
     { accessorKey: 'full_name', header: 'নাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
     { accessorKey: 'phone', header: 'ফোন' },
     { accessorKey: 'blood_group', header: 'গ্রুপ' },

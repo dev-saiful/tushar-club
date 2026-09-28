@@ -2,6 +2,29 @@ import React from "react";
 import { Camera, Calendar, Tag } from "lucide-react";
 import { useGalleryItems } from "../hooks/useGalleryItems";
 
+/** Mirrors the gallery card, including the caption that sits over the image. */
+const GalleryCardSkeleton: React.FC = () => (
+  <div className="relative h-60 rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm">
+    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 animate-pulse" />
+
+    <div className="absolute bottom-3 left-3 right-3 space-y-2">
+      <div className="h-2.5 w-24 rounded-full bg-gray-300/70 animate-pulse" />
+      <div className="h-3.5 w-3/4 rounded-full bg-gray-300/70 animate-pulse" />
+    </div>
+  </div>
+);
+
+const GallerySkeleton: React.FC = () => (
+  <div aria-busy="true" aria-live="polite">
+    <span className="sr-only">গ্যালারির তথ্য লোড হচ্ছে...</span>
+    <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 6 }).map((_, idx) => (
+        <GalleryCardSkeleton key={idx} />
+      ))}
+    </div>
+  </div>
+);
+
 export const GallerySection: React.FC = () => {
   const { items, loading } = useGalleryItems();
   return (
@@ -29,9 +52,7 @@ export const GallerySection: React.FC = () => {
 
         {/* Gallery Grid */}
         {loading ? (
-          <p className="mt-12 text-center text-gray-500">
-            গ্যালারির তথ্য লোড হচ্ছে...
-          </p>
+          <GallerySkeleton />
         ) : items.length === 0 ? (
           <p className="mt-12 text-center text-gray-500">
             কোনো গ্যালারি আইটেম পাওয়া যায়নি।

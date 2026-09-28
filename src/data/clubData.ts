@@ -26,6 +26,7 @@ export interface CommitteeMember {
   phone?: string;
   area: string;
   role: "executive" | "advisor" | "coordinator";
+  photoUrl?: string;
 }
 
 export interface GalleryItem {
