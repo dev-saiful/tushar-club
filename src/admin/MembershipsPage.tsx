@@ -32,6 +32,13 @@ export default function MembershipsPage() {
         .eq('phone', row.phone)
         .maybeSingle()
       if (!existingCommittee) {
+        // Append to the end of the manual order instead of defaulting to 0.
+        const { data: last } = await supabase
+          .from('committee_members')
+          .select('display_order')
+          .order('display_order', { ascending: false })
+          .limit(1)
+          .maybeSingle()
         await supabase.from('committee_members').insert({
           name: row.full_name,
           designation: 'সদস্য',
@@ -39,6 +46,7 @@ export default function MembershipsPage() {
           area: row.address,
           role: 'executive',
           photo_url: row.photo_url,
+          display_order: (last?.display_order ?? -1) + 1,
         })
       } else if (row.photo_url && !existingCommittee.photo_url) {
         // Fill in the photo the applicant uploaded without overwriting an admin-set one

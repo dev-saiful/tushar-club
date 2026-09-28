@@ -8,6 +8,7 @@ export interface CommitteeMemberRow {
   area: string
   role: 'executive' | 'advisor' | 'coordinator'
   photo_url: string | null
+  display_order: number
   created_at: string
 }
 

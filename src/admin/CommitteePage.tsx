@@ -6,7 +6,7 @@ import { PageHeader, Modal, Field, inputClass, PrimaryButton } from './ui'
 import DataTable from './DataTable'
 import ImageUpload from '../components/ImageUpload'
 
-const emptyForm = { name: '', designation: '', phone: '', area: '', role: 'executive', photo_url: '' }
+const emptyForm = { name: '', designation: '', phone: '', area: '', role: 'executive', photo_url: '', display_order: '0' }
 
 export default function CommitteePage() {
   const [rows, setRows] = useState<CommitteeMemberRow[]>([])
@@ -16,7 +16,7 @@ export default function CommitteePage() {
   const [form, setForm] = useState(emptyForm)
 
   const fetchRows = async () => {
-    const { data } = await supabase.from('committee_members').select('*').order('created_at')
+    const { data } = await supabase.from('committee_members').select('*').order('display_order', { ascending: true })
     if (data) setRows(data as CommitteeMemberRow[])
     setLoading(false)
   }
@@ -31,13 +31,13 @@ export default function CommitteePage() {
 
   const openEdit = (row: CommitteeMemberRow) => {
     setEditing(row)
-    setForm({ name: row.name, designation: row.designation, phone: row.phone || '', area: row.area, role: row.role, photo_url: row.photo_url || '' })
+    setForm({ name: row.name, designation: row.designation, phone: row.phone || '', area: row.area, role: row.role, photo_url: row.photo_url || '', display_order: String(row.display_order ?? 0) })
     setShowModal(true)
   }
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault()
-    const payload = { name: form.name, designation: form.designation, phone: form.phone || null, area: form.area, role: form.role, photo_url: form.photo_url || null }
+    const payload = { name: form.name, designation: form.designation, phone: form.phone || null, area: form.area, role: form.role, photo_url: form.photo_url || null, display_order: Number(form.display_order) || 0 }
     const { error } = editing
       ? await supabase.from('committee_members').update(payload).eq('id', editing.id)
       : await supabase.from('committee_members').insert(payload)
@@ -72,6 +72,7 @@ export default function CommitteePage() {
           <span className="text-gray-500">-</span>
         ),
     },
+    { accessorKey: 'display_order', header: 'ক্রম', cell: (c) => <span className="tabular-nums">{c.getValue() as number}</span> },
     { accessorKey: 'name', header: 'নাম', cell: (c) => <span className="font-bold">{c.getValue() as string}</span> },
     { accessorKey: 'designation', header: 'পদবি' },
     { accessorKey: 'phone', header: 'ফোন', cell: (c) => (c.getValue() as string) || '-' },
@@ -119,6 +120,15 @@ export default function CommitteePage() {
                 <option value="advisor">advisor</option>
                 <option value="coordinator">coordinator</option>
               </select>
+            </Field>
+            <Field label="ক্রম (ছোট সংখ্যা আগে)">
+              <input
+                type="number"
+                min={0}
+                value={form.display_order}
+                onChange={(e) => setForm({ ...form, display_order: e.target.value })}
+                className={inputClass}
+              />
             </Field>
             <Field label="ছবি">
               <ImageUpload
